@@ -17,7 +17,12 @@ void Window::toggle_fullscreen()
         update_position_and_size();
 
         const auto* mode = glfwGetVideoMode(_monitor);
-        glfwSetWindowMonitor(_window.get(), _monitor, 0, 0, mode->width, mode->height, 0);
+        glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+        glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+        glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+        glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+        glfwSetWindowMonitor(_window.get(), _monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+
         _mode = Mode::borderless;
     }
     else
@@ -25,7 +30,6 @@ void Window::toggle_fullscreen()
         glfwSetWindowMonitor(_window.get(), nullptr, _position[0], _position[1], _size[0], _size[1], 0);
         _mode = Mode::windowed;
     }
-
 }
 
 namespace detail
@@ -83,6 +87,7 @@ Window::Window(std::string_view title, size_t width, size_t height, Mode mode)
           }(),
           glfwDestroyWindow)
 {
+    update_position_and_size();
 }
 
 void Window::loop()

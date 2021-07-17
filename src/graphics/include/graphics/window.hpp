@@ -34,8 +34,8 @@ class Window
     static constexpr auto DEFAULT_HEIGHT = 480;
 
   private:
-    glm::ivec2 _position      = {};
-    glm::ivec2 _size          = {};
+    glm::ivec2 _position      = {100, 100};
+    glm::ivec2 _size          = {DEFAULT_WIDTH, DEFAULT_HEIGHT};
     Mode _mode                = Mode::windowed;
     GLFWmonitor* _monitor = nullptr;
     std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> _window;
