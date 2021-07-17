@@ -16,6 +16,14 @@ auto Window::create_borderless(std::string_view title)
     return glfwCreateWindow(mode->width, mode->height, title.data(), monitor, nullptr);
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
 Window::Window(std::string_view title, size_t width, size_t height, Mode mode)
     : _window([&]() -> GLFWwindow* {
           switch (mode)
@@ -31,6 +39,7 @@ Window::Window(std::string_view title, size_t width, size_t height, Mode mode)
           }
       }())
 {
+    glfwSetKeyCallback(_window, &key_callback);
 }
 
 void Window::run()
