@@ -4,13 +4,13 @@ set(PRJ_PUBLIC_HEADERS include/${PRJ_NAME}/window.hpp)
 
 set(PRJ_SOURCES src/window.cpp)
 
-set(PRJ_PRIVATE_LIBS glfw3)
+set(PRJ_PUBLIC_LIBS glfw)
 
-add_static_library(
+utils_add_static_library(
   ${PRJ_NAME}
   PUBLIC_HEADERS
   ${PRJ_PUBLIC_HEADERS}
   SOURCES
   ${PRJ_SOURCES}
-  PRIVATE_LIBS
-  ${PRJ_PRIVATE_LIBS})
+  PUBLIC_LIBS
+  ${PRJ_PUBLIC_LIBS})
