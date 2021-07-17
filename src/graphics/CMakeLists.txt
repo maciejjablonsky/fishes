@@ -1,10 +1,11 @@
 set(PRJ_NAME graphics)
 
-set(PRJ_PUBLIC_HEADERS include/${PRJ_NAME}/window.hpp)
+set(PRJ_PUBLIC_HEADERS include/${PRJ_NAME}/window.hpp
+                       include/${PRJ_NAME}/application.hpp)
 
-set(PRJ_SOURCES src/window.cpp)
+set(PRJ_SOURCES src/window.cpp src/application.cpp)
 
-set(PRJ_PUBLIC_LIBS glfw)
+set(PRJ_PUBLIC_LIBS glfw glm::glm glad)
 
 utils_add_static_library(
   ${PRJ_NAME}

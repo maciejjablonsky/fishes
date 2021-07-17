@@ -1,8 +1,7 @@
-#include <graphics/window.hpp>
+#include <graphics/application.hpp>
 
 int main()
 {
-    graphics::GLFW glfw;
-    graphics::Window window("title yay", graphics::Window::Mode::windowed);
-    window.run();
+    graphics::Application app("title yay");
+    app.run();
 }

@@ -5,7 +5,33 @@ namespace graphics
 Window::Window(std::string_view title, Mode mode) : Window(title, DEFAULT_WIDTH, DEFAULT_HEIGHT, mode)
 {
 }
-auto Window::create_borderless(std::string_view title)
+inline bool Window::is_fullscreen() const
+{
+    return _mode == Mode::borderless;
+}
+
+void Window::toggle_fullscreen()
+{
+    if (!is_fullscreen())
+    {
+        update_position_and_size();
+
+        const auto* mode = glfwGetVideoMode(_monitor);
+        glfwSetWindowMonitor(_window.get(), _monitor, 0, 0, mode->width, mode->height, 0);
+        _mode = Mode::borderless;
+    }
+    else
+    {
+        glfwSetWindowMonitor(_window.get(), nullptr, _position[0], _position[1], _size[0], _size[1], 0);
+        _mode = Mode::windowed;
+    }
+
+}
+
+namespace detail
+{
+
+auto create_borderless(std::string_view title)
 {
     const auto monitor = glfwGetPrimaryMonitor();
     auto mode          = glfwGetVideoMode(monitor);
@@ -16,39 +42,62 @@ auto Window::create_borderless(std::string_view title)
     return glfwCreateWindow(mode->width, mode->height, title.data(), monitor, nullptr);
 }
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+GLFWwindow* create_window(std::string_view title, size_t width, size_t height, Window::Mode mode)
 {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+    switch (mode)
     {
-        glfwSetWindowShouldClose(window, true);
+    case Window::Mode::windowed:
+        return glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
+    case Window::Mode::fullscreen:
+        return glfwCreateWindow(width, height, title.data(), glfwGetPrimaryMonitor(), nullptr);
+    case Window::Mode::borderless:
+        return create_borderless(title);
+    default:
+        return nullptr;
     }
 }
+} // namespace detail
 
 Window::Window(std::string_view title, size_t width, size_t height, Mode mode)
-    : _window([&]() -> GLFWwindow* {
-          switch (mode)
-          {
-          case Mode::windowed:
-              return glfwCreateWindow(width, height, title.data(), nullptr, nullptr);
-          case Mode::fullscreen:
-              return glfwCreateWindow(width, height, title.data(), glfwGetPrimaryMonitor(), nullptr);
-          case Mode::borderless:
-              return create_borderless(title);
-          default:
-              return nullptr;
-          }
-      }())
+    : _window(
+          [&] {
+              if (auto window = detail::create_window(title, width, height, mode))
+              {
+                  glfwMakeContextCurrent(window);
+                  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+                  {
+                      throw std::runtime_error("Failed to load OpenGL symbols");
+                  }
+                  glViewport(0, 0, width, height);
+                  glfwSetWindowUserPointer(window, this);
+                  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
+                      glViewport(0, 0, width, height);
+                  });
+                  _monitor = glfwGetPrimaryMonitor();
+                  glfwGetWindowSize(window, &_size[0], &_size[1]);
+                  glfwGetWindowPos(window, &_position[0], &_position[1]);
+                  return window;
+              }
+              glfwTerminate();
+              throw std::runtime_error("Failed to initialize window.");
+          }(),
+          glfwDestroyWindow)
 {
-    glfwSetKeyCallback(_window, &key_callback);
 }
 
-void Window::run()
+void Window::loop()
 {
-    while (!glfwWindowShouldClose(_window))
+    while (!glfwWindowShouldClose(_window.get()))
     {
-        glfwSwapBuffers(_window);
+        glfwSwapBuffers(_window.get());
         glfwPollEvents();
     }
+}
+
+void Window::update_position_and_size()
+{
+    glfwGetWindowSize(_window.get(), &_size[0], &_size[1]);
+    glfwGetWindowPos(_window.get(), &_position[0], &_position[1]);
 }
 
 } // namespace graphics

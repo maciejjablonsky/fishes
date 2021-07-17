@@ -1,17 +1,18 @@
 #pragma once
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <assert.h>
+#include <glm/vec2.hpp>
 #include <memory>
 #include <optional>
 #include <stdexcept>
 #include <string_view>
-
 namespace graphics
 {
-struct GLFW
+struct GLFWInitializer
 {
-    GLFW()
+    GLFWInitializer()
     {
         if (!glfwInit())
         {
@@ -33,26 +34,25 @@ class Window
     static constexpr auto DEFAULT_HEIGHT = 480;
 
   private:
-    struct WindowKeeper
-    {
-        WindowKeeper(GLFWwindow* window_ptr) : window{window_ptr, glfwDestroyWindow}
-        {
-            assert(window_ptr != nullptr);
-        }
-        std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> window;
-        operator GLFWwindow*()
-        {
-            return window.get();
-        }
-    } _window;
+    glm::ivec2 _position      = {};
+    glm::ivec2 _size          = {};
+    Mode _mode                = Mode::windowed;
+    GLFWmonitor* _monitor = nullptr;
+    std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> _window;
 
   public:
     Window(std::string_view title, Mode mode = Mode::windowed);
     Window(std::string_view title, size_t width, size_t height, Mode mode = Mode::windowed);
 
-    void run();
+    inline operator GLFWwindow*()
+    {
+        return _window.get();
+    }
 
-  protected:
-    auto create_borderless(std::string_view title);
+    void loop();
+    bool is_fullscreen() const;
+    void toggle_fullscreen();
+  private:
+    void update_position_and_size();
 };
 } // namespace graphics
