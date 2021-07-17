@@ -2,5 +2,7 @@
 
 int main()
 {
-    graphics::Window window;
+    graphics::GLFW glfw;
+    graphics::Window window("title yay", graphics::Window::Mode::windowed);
+    window.run();
 }
