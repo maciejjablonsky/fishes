@@ -34,6 +34,9 @@ function(utils_add_static_library LIBRARY_NAME)
     if (PARSED_ARGUMENTS_PRIVATE_LIBS)
         target_link_libraries(${LIBRARY_NAME} PRIVATE ${PARSED_ARGUMENTS_PRIVATE_LIBS})
     endif()
+
+    file(RELATIVE_PATH IDE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    set_target_properties(${LIBRARY_NAME} PROPERTIES FOLDER "${IDE_PATH}")
 endfunction()
 
 function(utils_add_executable EXECUTABLE_NAME)
@@ -59,4 +62,49 @@ function(utils_add_executable EXECUTABLE_NAME)
     if (PARSED_ARGUMENTS_LIBS)
         target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${PARSED_ARGUMENTS_LIBS})
     endif()
+    file(RELATIVE_PATH IDE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    message(STATUS "PATH: ${IDE_PATH}")
+endfunction()
+
+function(utils_add_header_library LIBRARY_NAME)
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src)
+        message(FATAL_ERROR "Header library cannot contain 'src' subfolder. Please remove ${CMAKE_CURRENT_SOURCE_DIR}/src")
+    endif()
+
+    set(PUBLIC_HEADERS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+    if (NOT EXISTS ${PUBLIC_HEADERS_DIR})
+        message(FATAL_ERROR "Include directory for '${LIBRARY_NAME}' header library doesn't exist. Should be: ${PUBLIC_HEADERS_DIR}")
+    endif()
+      if (NOT EXISTS ${PUBLIC_HEADERS_DIR}/${LIBRARY_NAME})
+        message(FATAL_ERROR "Library '${LIBRARY_NAME}' doesn't export public headers under include/lib_name path. Should be '${PUBLIC_HEADERS_DIR}/${LIBRARY_NAME}'")
+    endif()
+
+    cmake_parse_arguments(
+        PARSED_ARGUMENTS # prefix for inserted variables
+        "" # list of names of the boolean arguments (defined are set to true)
+        "" # mono valued arguments
+        "HEADERS;PUBLIC_LIBS;PRIVATE_LIBS" # names of list-valued arguments
+        ${ARGN}
+    )
+
+	 foreach (var IN ITEMS ${PARSED_ARGS_HEADERS})
+        # ../any/combination/of/../header/path.hpp
+        if (NOT "${var}" MATCHES "[A-Za-z/\\\.]*.\.(h|hpp)$")
+            message(FATAL_ERROR "Header library must contain only header files. Unexpected file: ${var}")
+        endif()
+    endforeach()
+    
+    add_library(${LIBRARY_NAME} INTERFACE ${PARSED_ARGUMENTS_HEADERS})
+
+    target_include_directories(${LIBRARY_NAME} INTERFACE ${PUBLIC_HEADERS_DIR})
+
+    if (PARSED_ARGUMENTS_PUBLIC_LIBS)
+        target_link_libraries(${LIBRARY_NAME} PUBLIC ${PARSED_ARGUMENTS_PUBLIC_LIBS})
+    endif()
+    if (PARSED_ARGUMENTS_PRIVATE_LIBS)
+        target_link_libraries(${LIBRARY_NAME} PRIVATE ${PARSED_ARGUMENTS_PRIVATE_LIBS})
+    endif()
+
+    file(RELATIVE_PATH IDE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+    set_target_properties(${LIBRARY_NAME} PROPERTIES FOLDER "${IDE_PATH}")
 endfunction()
