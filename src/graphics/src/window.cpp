@@ -88,12 +88,14 @@ Window::Window(std::string_view title, size_t width, size_t height, Mode mode)
           glfwDestroyWindow)
 {
     update_position_and_size();
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 }
 
 void Window::loop()
 {
     while (!glfwWindowShouldClose(_window.get()))
     {
+        glClear(GL_COLOR_BUFFER_BIT);
         glfwSwapBuffers(_window.get());
         glfwPollEvents();
     }

@@ -1,9 +1,11 @@
 #pragma once
 
+// clang-format off
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <assert.h>
+// clang-format on
 #include <glm/vec2.hpp>
+#include <assert.h>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -34,9 +36,9 @@ class Window
     static constexpr auto DEFAULT_HEIGHT = 480;
 
   private:
-    glm::ivec2 _position      = {100, 100};
-    glm::ivec2 _size          = {DEFAULT_WIDTH, DEFAULT_HEIGHT};
-    Mode _mode                = Mode::windowed;
+    glm::ivec2 _position  = {100, 100};
+    glm::ivec2 _size      = {DEFAULT_WIDTH, DEFAULT_HEIGHT};
+    Mode _mode            = Mode::windowed;
     GLFWmonitor* _monitor = nullptr;
     std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> _window;
 
@@ -52,6 +54,7 @@ class Window
     void loop();
     bool is_fullscreen() const;
     void toggle_fullscreen();
+
   private:
     void update_position_and_size();
 };
