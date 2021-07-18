@@ -4,7 +4,6 @@ namespace graphics
 {
 Application::Application(std::string_view title) : _window(title)
 {
-
 }
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -24,4 +23,4 @@ void Application::run()
     glfwSetKeyCallback(_window, key_callback);
     _window.loop();
 }
-}
+} // namespace graphics
