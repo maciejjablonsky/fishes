@@ -44,8 +44,13 @@ class Window
     static_assert(std::is_default_constructible_v<decltype(glfw_window_)>);
 
   public:
-    Window(const std::pmr::string & title, int width, int height);
-
+    Window(const Window&) = delete;
+    Window& operator=(const Window&) = delete;
+    Window(const std::pmr::string& title, int width, int height);
+    [[nodiscard]] inline bool should_close() const
+    {
+        return glfwWindowShouldClose(glfw_window_.get());
+    }
     inline operator GLFWwindow*()
     {
         return glfw_window_.get();

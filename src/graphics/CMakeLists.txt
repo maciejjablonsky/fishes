@@ -7,7 +7,9 @@ set(PRJ_PUBLIC_HEADERS include/${PRJ_NAME}/window.hpp
 
 set(PRJ_SOURCES src/window.cpp src/application.cpp src/cube.cpp)
 
-set(PRJ_PUBLIC_LIBS glfw glm::glm glad math)
+find_package(Vulkan REQUIRED FATAL)
+
+set(PRJ_PUBLIC_LIBS Vulkan::Vulkan glfw glm::glm glad math fmt)
 
 utils_add_static_library(
   ${PRJ_NAME}
