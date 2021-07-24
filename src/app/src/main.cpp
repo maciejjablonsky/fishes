@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <fmt/format.h>
 
-
 int main()
 {
     lake::Application app;
