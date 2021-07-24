@@ -4,14 +4,12 @@ set(PRJ_PUBLIC_HEADERS
 	include/${PRJ_NAME}/entity.hpp
 	include/${PRJ_NAME}/scene.hpp
 	include/${PRJ_NAME}/components.hpp
-	include/${PRJ_NAME}/systems.hpp
 )
 
 set(PRJ_SOURCES
 	src/entity.cpp
 	src/scene.cpp
 	src/components.cpp
-	src/systems.cpp
 )
 set(PRJ_PUBLIC_LIBS EnTT)
 
