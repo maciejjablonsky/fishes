@@ -1,16 +1,15 @@
 #pragma once
 
-// clang-format off
-#include <glad/glad.h>
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-// clang-format on
-#include <glm/vec2.hpp>
 #include <assert.h>
+#include <glm/vec2.hpp>
 #include <memory>
 #include <optional>
 #include <stdexcept>
-#include <string_view>
-namespace graphics
+#include <string>
+
+namespace lake::graphics
 {
 struct GLFWInitializer
 {
@@ -20,42 +19,39 @@ struct GLFWInitializer
         {
             throw std::runtime_error("Failed to initialize GLFW library");
         }
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // disable openGL api
     }
 };
 
 class Window
 {
-  public:
-    enum class Mode : uint8_t
-    {
-        windowed,
-        fullscreen,
-        borderless
-    };
-    static constexpr auto DEFAULT_WIDTH  = 640;
-    static constexpr auto DEFAULT_HEIGHT = 480;
-
   private:
-    glm::ivec2 _position  = {100, 100};
-    glm::ivec2 _size      = {DEFAULT_WIDTH, DEFAULT_HEIGHT};
-    Mode _mode            = Mode::windowed;
-    GLFWmonitor* _monitor = nullptr;
-    std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> _window;
+    glm::ivec2 position_ = {100, 100};
+    glm::ivec2 size_;
+    std::pmr::string title_;
+
+    struct window_deleter
+    {
+        void operator()(GLFWwindow* window)
+        {
+            if (window)
+            {
+                glfwDestroyWindow(window);
+            }
+        }
+    };
+    std::unique_ptr<GLFWwindow, window_deleter> glfw_window_;
+    static_assert(std::is_default_constructible_v<decltype(glfw_window_)>);
 
   public:
-    Window(std::string_view title, Mode mode = Mode::windowed);
-    Window(std::string_view title, size_t width, size_t height, Mode mode = Mode::windowed);
+    Window(const std::pmr::string & title, int width, int height);
 
     inline operator GLFWwindow*()
     {
-        return _window.get();
+        return glfw_window_.get();
     }
 
-    void loop();
-    bool is_fullscreen() const;
-    void toggle_fullscreen();
-
-  private:
-    void update_position_and_size();
+  protected:
+    bool init();
 };
-} // namespace graphics
+} // namespace lake::graphics
