@@ -49,7 +49,7 @@ function(utils_add_executable EXECUTABLE_NAME)
         PARSED_ARGUMENTS # prefix for inserted variables
         "" # list of names of the boolean arguments (defined are set to true)
         "" # mono valued arguments
-        "SOURCES;LIBS" # names of list-valued arguments
+        "SOURCES;INCLUDE_DIRECTORIES;LIBS" # names of list-valued arguments
         ${ARGN}
     )
 
@@ -62,6 +62,11 @@ function(utils_add_executable EXECUTABLE_NAME)
     if (PARSED_ARGUMENTS_LIBS)
         target_link_libraries(${EXECUTABLE_NAME} PUBLIC ${PARSED_ARGUMENTS_LIBS})
     endif()
+
+    if (PARSED_ARGUMENTS_INCLUDE_DIRECTORIES)
+        target_include_directories(${EXECUTABLE_NAME} PUBLIC ${PARSED_ARGUMENTS_INCLUDE_DIRECTORIES})
+    endif()
+
     file(RELATIVE_PATH IDE_PATH ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
     message(STATUS "PATH: ${IDE_PATH}")
 endfunction()
@@ -93,7 +98,7 @@ function(utils_add_header_library LIBRARY_NAME)
             message(FATAL_ERROR "Header library must contain only header files. Unexpected file: ${var}")
         endif()
     endforeach()
-    
+
     add_library(${LIBRARY_NAME} INTERFACE ${PARSED_ARGUMENTS_HEADERS})
 
     target_include_directories(${LIBRARY_NAME} INTERFACE ${PUBLIC_HEADERS_DIR})
