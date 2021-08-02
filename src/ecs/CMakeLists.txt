@@ -11,6 +11,9 @@ set(PRJ_SOURCES
 	src/scene.cpp
 	src/components.cpp
 )
+
+find_package(EnTT REQUIRED)
+
 set(PRJ_PUBLIC_LIBS EnTT)
 
 utils_add_static_library(ecs PUBLIC_HEADERS ${PRJ_PUBLIC_HEADERS} SOURCES ${PRJ_SOURCES} PUBLIC_LIBS ${PRJ_PUBLIC_LIBS})
