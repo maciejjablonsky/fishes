@@ -4,3 +4,4 @@ add_subdirectory(ecs)
 add_subdirectory(app)
 
 add_subdirectory(vulkan-demo)
+add_subdirectory(shaders)
