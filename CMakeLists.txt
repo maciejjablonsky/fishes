@@ -10,6 +10,4 @@ include(adders)
 
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake OPTIONAL)
 
-
-
 add_subdirectory(src)

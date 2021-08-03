@@ -7,7 +7,7 @@ Window::Window(const std::pmr::string& title, int width, int height) : title_(ti
 {
     if(!init())
     {
-        throw std::runtime_error(fmt::format("Failed to initialize widow: {}", title)); 
+        throw std::runtime_error(fmt::format("Failed to initialize widow: {}", title));
     }
 }
 
