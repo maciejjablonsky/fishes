@@ -2,8 +2,11 @@ find_package(EnTT REQUIRED)
 
 add_library(
     ecs STATIC
-    include/${PRJ_NAME}/entity.hpp include/${PRJ_NAME}/scene.hpp
-    include/${PRJ_NAME}/components.hpp src/entity.cpp src/scene.cpp
-    src/components.cpp)
+    include/ecs/components.hpp
+    include/ecs/entity.hpp
+    include/ecs/scene.hpp
+    src/components.cpp
+    src/entity.cpp
+    src/scene.cpp)
 
 target_link_libraries(ecs PUBLIC EnTT)

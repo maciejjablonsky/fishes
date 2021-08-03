@@ -3,7 +3,7 @@
 
 namespace math
 {
-constexpr auto power_of_two(std::integral auto n)
+constexpr auto power_two(std::integral auto n)
 {
     return 1 << n;
 }
