@@ -1,18 +1,9 @@
-set(PRJ_NAME ecs)
+find_package(EnTT REQUIRED)
 
-set(PRJ_PUBLIC_HEADERS
-	include/${PRJ_NAME}/entity.hpp
-	include/${PRJ_NAME}/scene.hpp
-	include/${PRJ_NAME}/components.hpp
-	include/${PRJ_NAME}/systems.hpp
-)
+add_library(
+    ecs STATIC
+    include/${PRJ_NAME}/entity.hpp include/${PRJ_NAME}/scene.hpp
+    include/${PRJ_NAME}/components.hpp src/entity.cpp src/scene.cpp
+    src/components.cpp)
 
-set(PRJ_SOURCES
-	src/entity.cpp
-	src/scene.cpp
-	src/components.cpp
-	src/systems.cpp
-)
-set(PRJ_PUBLIC_LIBS EnTT)
-
-utils_add_static_library(ecs PUBLIC_HEADERS ${PRJ_PUBLIC_HEADERS} SOURCES ${PRJ_SOURCES} PUBLIC_LIBS ${PRJ_PUBLIC_LIBS})
+target_link_libraries(ecs PUBLIC EnTT)
